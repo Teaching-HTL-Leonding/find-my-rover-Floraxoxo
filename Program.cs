@@ -1,15 +1,15 @@
 ﻿Console.Clear();
 
 #region variables
-string input = "";
+string input = "";                              //defining variables I need everywhere
 int countNorthSouth = 0, countWestEast = 0;
-int manhattanCount = 0; 
+int manhattanCount = 0;
 bool falseInput = false;
 #endregion
 
 #region code
-CheckIfCorrectInput("");
-CalculateDistance(input);
+CheckIfCorrectInput(""); //Method to check if the input is valid
+ ReplaceNumbers("", 'o'); 
 if (countWestEast != 0)
 {
     if (countWestEast < 0) { countWestEast *= -1; Console.WriteLine($"The Robo went {countWestEast}m east, "); }
@@ -18,12 +18,12 @@ if (countWestEast != 0)
 else { Console.WriteLine(""); }
 if (countNorthSouth != 0)
 {
-    if (countNorthSouth < 0) {countNorthSouth *= -1; Console.WriteLine($"The Robo went {countNorthSouth}m south, "); }
+    if (countNorthSouth < 0) { countNorthSouth *= -1; Console.WriteLine($"The Robo went {countNorthSouth}m south, "); }
     else if (countNorthSouth > 0) { Console.WriteLine($" The Robo went {countNorthSouth}m north, "); }
 }
 else { Console.WriteLine(""); }
-Console.WriteLine($"Your manhattan distance is {manhattanCount}m, ");
-Console.WriteLine(CalculateShortDistance(0));
+//Console.WriteLine($"Your manhattan distance is {manhattanCount}m, ");
+//Console.WriteLine(CalculateShortDistance(0));
 #endregion
 
 #region methods
@@ -33,42 +33,58 @@ void CheckIfCorrectInput(string help)
     {
         Console.Write("Please enter the way you want to go: ");
         input = Console.ReadLine()!;
-        help = input.Replace("<", "").Replace(">", "").Replace("^", "").Replace("V", "");
-        if (help == "") { falseInput = false; }
+        help = input.Replace("<", "").Replace(">", "").Replace("^", "").Replace("V", ""); //Replacement of every valid character to see if the input is correct
+        if (help == "" || int.Parse(help) < int.MaxValue && int.Parse(help) > 0) { falseInput = false;  }
         else { falseInput = true; }
     } while (falseInput == true);
 }
-void CalculateDistance(string way)
+string ReplaceNumbers(string newWay, char help2)
 {
+    string way = input;
+    string  number = way.Replace("<", "").Replace(">", "").Replace("^", "").Replace("V", "");
+    int toAdd;
     for (int i = 0; i < way.Length; i++)
     {
-        char help = way[i];
-        switch (help)
+        if(i+1 == way.Length) {toAdd = 1;}
+        else if(char.IsAsciiDigit(way[i + 1]))
+        {toAdd = int.Parse(number[0].ToString());
+        number = number.Substring(1);}
+        else{
+            toAdd = 1;
+        }
+        CalculateDistance(way[i].ToString(), toAdd);
+    } //after that just go into the method to calculate the input and give the newWay for the parameter
+    return newWay;
+}
+
+void CalculateDistance(string character,int toAdd)
+{
+        switch (character)
         {
-            case '<':
-                countWestEast++;
-                manhattanCount++;
+            case "<":
+                countWestEast+= toAdd; 
+                manhattanCount+= toAdd;
                 break;
-            case '>':
-                countWestEast--;
-                manhattanCount++;
+            case ">":
+                countWestEast-= toAdd;
+                manhattanCount+= toAdd;
                 break;
-            case '^':
-                countNorthSouth++;
-                manhattanCount++;
+            case "^":
+                countNorthSouth+= toAdd;
+                manhattanCount+= toAdd;
                 break;
-            case 'V':
-                countNorthSouth--;
-                manhattanCount++;
+            case "V":
+                countNorthSouth-= toAdd;
+                manhattanCount+= toAdd;
                 break;
             default:
                 break;
         }
     }
-}
-string CalculateShortDistance(double solution)
+
+/*string CalculateShortDistance(double solution)
 {
     solution = Math.Sqrt((countWestEast * countWestEast) + (countNorthSouth * countNorthSouth));
     return $"The linear distance is: {solution}";
-}
+}*/
 #endregion
